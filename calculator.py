@@ -5,20 +5,26 @@ alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 def preprocess(args):
+    # print(args)
     expression = args.split()
+    # print(expression)
     for i in range(len(expression)):
-        if expression[i][0] == '+':
-            expression[i] = '+'
-        if expression[i][0] == '-':
-            if len(expression[i])%2 == 0:
+        if len(expression[i]) > 1:
+            if expression[i][0] == '+' and expression[i][1] == '+':
                 expression[i] = '+'
-            else:
-                expression[i] = '-'
+            if expression[i][0] == '-' and expression[i][1] == '-':
+                if len(expression[i])%2 == 0:
+                    expression[i] = '+'
+                else:
+                    expression[i] = '-'
     expression = ''.join(expression)
+    # print(expression)
     expression = expression.replace('+', ' + ').replace('-', ' - ').replace('*', ' * ').replace('/', ' / ').replace('(', ' ( ').replace(')', ' ) ').split()
     # print(expression)
     return expression
-# preprocess(('8 * 3 + 12 * (4 - 2)'))
+# preprocess('-10')
+
+
 
 def identifier_check(arg):
     for character in arg:
@@ -58,11 +64,12 @@ def assignment_handler(args):
 
 
 def infix_to_postfix(expression):
+    # print('Infix: ', expression)
     postfix = []
     stack = deque()
-    print(expression)
+    # print(expression)
     for character in expression:
-        print(character)
+        # print(character)
         if character in '*/(':
             stack.append(character)
         elif character == ')':
@@ -109,6 +116,7 @@ def infix_to_postfix(expression):
 def solve_postfix(expression):
     stack1 = deque()
     # stack2 = deque()
+    # print('Postfix: ', expression)
     for element in expression:
         if element in variable_dict:
             stack1.append(variable_dict[element])
@@ -118,34 +126,43 @@ def solve_postfix(expression):
                     operand1 = stack1.pop()
                 if stack1:
                     operand2 = stack1.pop()
-                stack1.append(operand1 + operand2)
+                    stack1.append(operand1 + operand2)
+                else:
+                    stack1.append(operand1)
 
             elif element == '-':
                 if stack1:
                     operand1 = stack1.pop()
                 if stack1:
                     operand2 = stack1.pop()
-                stack1.append(operand2 - operand1)
+                    stack1.append(operand2 - operand1)
+                else:
+                    stack1.append(-1*operand1)
             elif element == '*':
                 if stack1:
                     operand1 = stack1.pop()
                 if stack1:
                     operand2 = stack1.pop()
                 stack1.append(operand1 * operand2)
+
             elif element == '/':
                 if stack1:
                     operand1 = stack1.pop()
                 if stack1:
                     operand2 = stack1.pop()
-                stack1.append(operand1 / operand2)
+                stack1.append(operand2 / operand1)
         else:
-            stack1.append(int(element))
+            try:
+                stack1.append(int(element))
+            except:
+                print('Unknown Variable')
+                return '!'
 
     return stack1.pop()
 
 # solve_postfix(['8', '3', '*', '12', '4', '2', '-', '*', '+'])
-def calculator(args):
-    pass
+# def calculator(args):
+#     pass
     # expression = args.replace('+', '').replace('--', '').replace('-', ' - ').replace('(', ' ( ').replace(')', ' ) ').split()
     # modified_expression = []
     # for i in range(len(expression)-1):
@@ -186,28 +203,29 @@ def calculator(args):
     #         print('Unknown Variable')
 
 
-# while True:
-#     arguments = input()
-#     if len(arguments) == 0:
-#         continue
-#     if arguments[0] == '/':
-#         command_handler(arguments)
-#         continue
-#     if '=' in arguments:
-#         assignment_handler(arguments)
-#         continue
-#     if '**' in arguments or '//' in arguments:
-#         print('Invalid expression')
-#         continue
-#     arguments = preprocess(arguments)
-#     postfix = infix_to_postfix(arguments)
-#     if postfix:
-#         result = solve_postfix(postfix)
-#         print(result)
-#     # else:
-#     #     continue
-#     print(arguments)
-#     print(postfix)
+while True:
+    arguments = input()
+    if len(arguments) == 0:
+        continue
+    if arguments[0] == '/':
+        command_handler(arguments)
+        continue
+    if '=' in arguments:
+        assignment_handler(arguments)
+        continue
+    if '**' in arguments or '//' in arguments:
+        print('Invalid expression')
+        continue
+    arguments = preprocess(arguments)
+    postfix = infix_to_postfix(arguments)
+    if postfix:
+        result = solve_postfix(postfix)
+        if result != '!':
+            print(result)
+    # else:
+    #     continue
+    # print(arguments)
+    # print(postfix)
 
     # calculator(arguments)
 
