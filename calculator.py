@@ -5,9 +5,7 @@ alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 def preprocess(args):
-    # print(args)
     expression = args.split()
-    # print(expression)
     for i in range(len(expression)):
         if len(expression[i]) > 1:
             if expression[i][0] == '+' and expression[i][1] == '+':
@@ -18,12 +16,8 @@ def preprocess(args):
                 else:
                     expression[i] = '-'
     expression = ''.join(expression)
-    # print(expression)
     expression = expression.replace('+', ' + ').replace('-', ' - ').replace('*', ' * ').replace('/', ' / ').replace('(', ' ( ').replace(')', ' ) ').split()
-    # print(expression)
     return expression
-# preprocess('-10')
-
 
 
 def identifier_check(arg):
@@ -64,12 +58,9 @@ def assignment_handler(args):
 
 
 def infix_to_postfix(expression):
-    # print('Infix: ', expression)
     postfix = []
     stack = deque()
-    # print(expression)
     for character in expression:
-        # print(character)
         if character in '*/(':
             stack.append(character)
         elif character == ')':
@@ -106,101 +97,52 @@ def infix_to_postfix(expression):
         print('Invalid Expression')
         return 0
     return postfix
-    # print(postfix)
-
-# infix_to_postfix(['8', '*', '3', '+', '12', '*', '(', '4', '-', '2', ')'])
-
-
 
 
 def solve_postfix(expression):
-    stack1 = deque()
-    # stack2 = deque()
-    # print('Postfix: ', expression)
+    stack = deque()
     for element in expression:
         if element in variable_dict:
-            stack1.append(variable_dict[element])
+            stack.append(variable_dict[element])
         elif element in '+-*/':
             if element == '+':
-                if stack1:
-                    operand1 = stack1.pop()
-                if stack1:
-                    operand2 = stack1.pop()
-                    stack1.append(operand1 + operand2)
+                if stack:
+                    operand1 = stack.pop()
+                if stack:
+                    operand2 = stack.pop()
+                    stack.append(operand1 + operand2)
                 else:
-                    stack1.append(operand1)
+                    stack.append(operand1)
 
             elif element == '-':
-                if stack1:
-                    operand1 = stack1.pop()
-                if stack1:
-                    operand2 = stack1.pop()
-                    stack1.append(operand2 - operand1)
+                if stack:
+                    operand1 = stack.pop()
+                if stack:
+                    operand2 = stack.pop()
+                    stack.append(operand2 - operand1)
                 else:
-                    stack1.append(-1*operand1)
+                    stack.append(-1*operand1)
             elif element == '*':
-                if stack1:
-                    operand1 = stack1.pop()
-                if stack1:
-                    operand2 = stack1.pop()
-                stack1.append(operand1 * operand2)
+                if stack:
+                    operand1 = stack.pop()
+                if stack:
+                    operand2 = stack.pop()
+                stack.append(operand1 * operand2)
 
             elif element == '/':
-                if stack1:
-                    operand1 = stack1.pop()
-                if stack1:
-                    operand2 = stack1.pop()
-                stack1.append(operand2 / operand1)
+                if stack:
+                    operand1 = stack.pop()
+                if stack:
+                    operand2 = stack.pop()
+                stack.append(operand2 / operand1)
         else:
             try:
-                stack1.append(int(element))
-            except:
+                stack.append(int(element))
+            except TypeError:
                 print('Unknown Variable')
                 return '!'
 
-    return stack1.pop()
-
-# solve_postfix(['8', '3', '*', '12', '4', '2', '-', '*', '+'])
-# def calculator(args):
-#     pass
-    # expression = args.replace('+', '').replace('--', '').replace('-', ' - ').replace('(', ' ( ').replace(')', ' ) ').split()
-    # modified_expression = []
-    # for i in range(len(expression)-1):
-    #     if expression[i] in '+-*/()' or expression[i+1] in '+-*/()':
-    #         modified_expression.append(expression[i])
-    #     else:
-    #         modified_expression.append(expression[i])
-    #         modified_expression.append('+')
-    # modified_expression.append(expression[-1])
-    #
-    # print(modified_expression)
-
-    # total = 0
-    # flag = 0
-    # arg = ''
-    # try:
-    #     for number in numbers:
-    #         arg = number
-    #         if number == '+':
-    #             continue
-    #         if number == '-':
-    #             flag = 1
-    #             continue
-    #         if flag == 1:
-    #             if number[0] in alphabet:
-    #                 total -= variable_dict[number]
-    #             else:
-    #                 total -= int(number)
-    #             flag = 0
-    #         else:
-    #             if number[0] in alphabet:
-    #                 total += variable_dict[number]
-    #             else:
-    #                 total += int(number)
-    #     print(total)
-    # except KeyError:
-    #     if identifier_check(arg):
-    #         print('Unknown Variable')
+    return stack.pop()
 
 
 while True:
@@ -221,11 +163,4 @@ while True:
     if postfix:
         result = solve_postfix(postfix)
         if result != '!':
-            print(result)
-    # else:
-    #     continue
-    # print(arguments)
-    # print(postfix)
-
-    # calculator(arguments)
-
+            print(int(result))
